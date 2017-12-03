@@ -43,6 +43,7 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     'rest_framework',
     'phonenumber_field',
+    'django_extensions',
 ]
 
 LOCAL_APPS = [

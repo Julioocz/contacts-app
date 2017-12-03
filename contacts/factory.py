@@ -46,18 +46,19 @@ class PersonFactory(factory.django.DjangoModelFactory):
 
 class PersonWithInfoFactory(PersonFactory):
 
-    def _create_info(self, info_factory):
-        # Creating the info records
-        records = info_factory.create_batch(random.randrange(5), person=self)
-        primary_info = random.choice(records)
-        primary_info.primary = True
-        primary_info.save()
-
     @factory.post_generation
     def create_associated_info(self, created, *args, **kwargs):
         if not created:
             return
 
-        self._create_info(EmailFactory)
-        self._create_info(PhoneNumberFactory)
-        self._create_info(AddressFactory)
+        def _create_info(info_factory):
+            # Creating the info records
+            records = info_factory.create_batch(random.randrange(5), person=self)
+            if records:
+                primary_info = random.choice(records)
+                primary_info.primary = True
+                primary_info.save()
+
+        _create_info(EmailFactory)
+        _create_info(PhoneNumberFactory)
+        _create_info(AddressFactory)
