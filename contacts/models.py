@@ -13,7 +13,7 @@ class Person(TimeStampedModel):
     date_of_birth = models.DateField(null=True, blank=True)
 
     def get_absolute_url(self):
-        return reverse('contacts:person-detail', kwargs={'pk': self.pk})
+        return reverse('contacts:contact-detail', kwargs={'pk': self.pk})
 
     def _get_primary(self, name, attr_name=None):
         """Returns the primary record of the provided related person info object start name.

@@ -1,10 +1,22 @@
-from django.shortcuts import render
-
+from django.urls import reverse
+from django.views.generic import TemplateView
 from rest_framework import viewsets, mixins
 
-from .serializers import ListPersonSerializer, DetailPersonSerializer, EmailSerializer, AddressSerializer, \
-    PhoneNumberSerializer
 from .models import Person, Email, Address, PhoneNumber
+from .serializers import (
+    ListPersonSerializer, DetailPersonSerializer, EmailSerializer, AddressSerializer,
+    PhoneNumberSerializer
+)
+
+
+class ContactApp(TemplateView):
+    template_name = 'contacts.html'
+
+    def get_context_data(self, **kwargs):
+        """Adds the contacts endpoint url to the template context"""
+        context = super().get_context_data(**kwargs)
+        context['url_contacts'] = reverse('contacts:contact-list')
+        return context
 
 
 class PersonViewSet(viewsets.ModelViewSet):
