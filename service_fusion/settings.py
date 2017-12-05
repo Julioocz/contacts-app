@@ -15,7 +15,9 @@ import os
 import environ
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT_DIR = environ.Path(__file__) - 2
+APPS_DIR = ROOT_DIR
+
 env = environ.Env()
 
 # Quick-start development settings - unsuitable for production
@@ -44,6 +46,7 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'phonenumber_field',
     'django_extensions',
+    'webpack_loader',
 ]
 
 LOCAL_APPS = [
@@ -67,7 +70,7 @@ ROOT_URLCONF = 'service_fusion.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [str(ROOT_DIR.path('templates'))],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -123,5 +126,19 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
-
+STATICFILES_DIRS = (
+    str(ROOT_DIR.path('frontend')),
+)
 STATIC_URL = '/static/'
+
+# Custom stuff
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'CACHE': not DEBUG,
+        'BUNDLE_DIR_NAME': 'bundles/',  # must end with slash
+        'STATS_FILE': str(ROOT_DIR.path('webpack-stats.json')),
+        'POLL_INTERVAL': 0.1,
+        'TIMEOUT': None,
+        'IGNORE': ['.+\.hot-update.js', '.+\.map']
+    }
+}
