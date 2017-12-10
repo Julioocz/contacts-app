@@ -1,6 +1,6 @@
 <template>
   <b-modal :active="open">
-    <contact-detail v-if="!editMode"></contact-detail>
+    <contact-detail v-if="editMode"></contact-detail>
     <contact-edit v-else></contact-edit>
   </b-modal>
 </template>

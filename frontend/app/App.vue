@@ -1,6 +1,6 @@
 <template>
   <div class="app-body">
-    <div class="box app-container container is-primary">
+    <div class="box box-light app-container container is-primary">
       <top-bar></top-bar>
       <contacts-table></contacts-table>
     </div>
@@ -65,9 +65,12 @@
     padding-bottom: 10vh;
   }
 
+  .box-light {
+    background-color: $light;
+  }
+
   .app-container {
     min-height: 80vh;
-    background-color: $light;
     padding: 5vh;
   }
 </style>
