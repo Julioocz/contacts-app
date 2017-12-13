@@ -8,6 +8,9 @@ from .serializers import PersonSerializer
 
 
 class ContactApp(TemplateView):
+    """View in charge of serving the contact app and injecting in the context the contact list initial url.
+    All the frontend is handled using Vue from this point
+    """
     template_name = 'contacts.html'
 
     def get_context_data(self, **kwargs):
@@ -22,19 +25,19 @@ class PersonViewSet(viewsets.ModelViewSet):
     Viewset for the person objects
 
     list:
-    Return a list of the persons saved with their primary email, address and phone number
+    Returns a list of persons
 
     retrieve:
-    Return a given person with all its emails, address and phone numbers
+    Returns a single person by id
 
     create:
     Creates a new person
 
     update:
-    Updates a person
+    Updates the person that has the provided url id
 
     partial_update:
-    Updates partially a person
+    Updates partially the person that has the provided url id
 
     destroy:
     Removes a person from the db
@@ -42,7 +45,7 @@ class PersonViewSet(viewsets.ModelViewSet):
     serializer_class = PersonSerializer
 
     def get_queryset(self):
-        """Allows to do search queries"""
+        """Allows to do search queries for all the person attributes and related info"""
         queryset = Person.objects.all()
         query = self.request.GET.get('query')
         if query:
