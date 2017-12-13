@@ -1,21 +1,27 @@
 <template>
   <div class="app-body">
     <div class="box box-light app-container container is-primary">
-      <top-bar></top-bar>
+      <top-bar :count="count" @contactsDeleted="getContacts"></top-bar>
       <contacts-table></contacts-table>
+      <page-numerator></page-numerator>
     </div>
 
-    <contact-modal :open="true"></contact-modal>
+    <contact-modal></contact-modal>
+    <b-loading :active="sharedState.loading"></b-loading>
   </div>
 </template>
 
 <script>
   import axios from 'axios';
 
+  import store from './store';
   import ContactsTable from './components/ContactsTable';
   import Segment from './components/Segment';
   import TopBar from './components/TopBar';
   import ContactModal from './components/ContactModal';
+  import PageNumerator from './components/PageNumerator';
+  import { getAndSetContactList } from "./utils";
+
 
   export default {
     name: "app",
@@ -24,6 +30,7 @@
       Segment,
       TopBar,
       ContactModal,
+      PageNumerator
     },
 
     props: {
@@ -35,22 +42,30 @@
 
     data() {
       return {
-        loading: true,
-        contacts: [],
+        sharedState: store.state,
         error: false,
+        count: null,
       }
     },
 
     mounted() {
-      axios.get(this.endpoint)
-        .then()
-        .catch(this.handleError)
+      store.setInitEndpoint(this.endpoint);
+      store.setCurrentEndpoint(this.endpoint);
+      this.getContacts();
     },
 
     methods: {
-      handleError() {
+      getContacts() {
+        store.setLoading(true);
+        getAndSetContactList()
+          .then(() => store.setLoading(false))
+          .catch(this.handleError);
+      },
+
+      handleError(error) {
+        console.error(error);
         this.error = true;
-      }
+      },
     }
   }
 </script>
@@ -61,8 +76,9 @@
 
   .app-body {
     background: linear-gradient(to top right, $secondary, $primary);
-    padding-top: 10vh;
+    padding-top: 5vh;
     padding-bottom: 10vh;
+    min-height: 100vh;
   }
 
   .box-light {
@@ -70,7 +86,7 @@
   }
 
   .app-container {
-    min-height: 80vh;
+    min-height: 90vh;
     padding: 5vh;
   }
 </style>

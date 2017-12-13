@@ -4,19 +4,29 @@
       <div class="column is-4">
         <span class="title is-6 section-title has-text-dark">{{ header }}:</span>
       </div>
-      <div class="column is-3 is-offset-3 has-text-dark">
+      <div class="column is-3 is-offset-2 has-text-dark">
         Type
       </div>
       <div class="column is-2 has-text-centered has-text-dark">
         Primary
       </div>
     </div>
-    <personal-info-input :type="name"></personal-info-input>
-    <personal-info-input :type="name"></personal-info-input>
-    <personal-info-input :type="name"></personal-info-input>
-    <div class="columns is-">
-      <div class="column is-2 is-offset-10 has-text-centered">
-        <b-icon icon="plus-circle" type="is-primary" class="cursor-pointer"></b-icon>
+    <personal-info-input
+      v-for="(item, index) in info"
+      :type="type"
+      :value="item[valueProperty]"
+      :infoType="item.info_type"
+      :primary="item.primary"
+      :key="index"
+      @valueChange="value => handleChange(index, value, valueProperty)"
+      @infoTypeChange="value => handleChange(index, value, 'info_type')"
+      @primaryChange="value => handleChange(index, value, 'primary')"
+      @delete="() => handleDelete(index)"
+    >
+    </personal-info-input>
+    <div class="columns">
+      <div class="column is-2 is-offset-9 has-text-centered">
+        <b-icon @click.native="addInfoItem" icon="plus-circle" type="is-primary" class="cursor-pointer"></b-icon>
       </div>
     </div>
   </div>
@@ -24,22 +34,57 @@
 
 <script>
   import PersonalInfoInput from './PersonalInfoInput';
-
-  const HEADER_MAPPING = {
-    email: 'Emails:',
-    phoneNumber: 'Phone Number',
-    address: 'Addresses'
-  };
+  import { CONTACT_HEADER_MAPPING } from "../constants";
+  import { emptyContactInfo } from "../utils";
 
   export default {
     name: "personal-info-input-headers",
-    props: ['name'],
+    props: ['type', 'info', 'valueProperty'],
     components: { PersonalInfoInput, },
     computed: {
       header() {
-        return HEADER_MAPPING[this.name];
+        return CONTACT_HEADER_MAPPING[this.type];
       }
     },
+
+    watch: {
+      info() {
+        console.log(this.info);
+      }
+    },
+    methods: {
+      handleChange(index, value, valueProperty) {
+        console.log('Handling change', index, value, valueProperty);
+        const newInfo = this.info.slice();
+        // There can only be a primary value
+        console.log(newInfo);
+        if (valueProperty === 'primary') {
+          newInfo.forEach(item => item.primary = false);
+        }
+        console.log(newInfo);
+        newInfo[index][valueProperty] = value;
+        this.$emit('update:info', newInfo);
+      },
+
+      handleDelete(index) {
+        console.log('DELETE');
+        const newInfo = this.info.slice();
+        const removedItem = newInfo.splice(index, 1);
+        // Checking if the removed item was the primary one. If so the first item is set to primary
+        if (removedItem.primary && newInfo.length > 0) {
+          newInfo[0].primary = true
+        }
+
+        this.$emit('update:info', newInfo);
+      },
+
+      addInfoItem() {
+        console.log('ADD ITEM');
+        const newInfo = this.info.slice();
+        newInfo.push(emptyContactInfo(this.type, newInfo.length === 0));
+        this.$emit('update:info', newInfo);
+      }
+    }
   }
 </script>
 

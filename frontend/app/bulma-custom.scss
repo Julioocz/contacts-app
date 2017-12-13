@@ -21,6 +21,13 @@ $colors: (
         "danger": ($danger, $danger-invert),
 );
 
+// Custom table
+$table-cell-padding: 0.75em 0.75em;
+$table-row-active-background-color: $info;
+$table-row-active-color: $info-invert;
+ $table-row-hover-background-color: $info;
+
 // Import Bulma and Buefy styles
 @import "~bulma";
 @import "~buefy/src/scss/buefy";
+

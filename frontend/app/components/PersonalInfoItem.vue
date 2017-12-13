@@ -2,10 +2,10 @@
   <div class="box is-shadowless contact-info-box">
     <div class="columns">
       <div class="column">
-        julioocz@gmail.com
+        {{ value }} <b-tag v-if="primary" style="margin-left: 5px" type="is-secondary">primary</b-tag>
       </div>
       <div class="column is-2 has-text-primary has-text-centered">
-        <b>Personal</b>
+        <b>{{ infoType }}</b>
       </div>
     </div>
   </div>
@@ -13,7 +13,8 @@
 
 <script>
   export default {
-    name: "personal-info-item"
+    name: "personal-info-item",
+    props: ['value', 'infoType', 'primary']
   }
 </script>
 
