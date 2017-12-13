@@ -1,10 +1,20 @@
 <template>
   <div class="level">
-    <div class="level-left">
+    <div class="level-item hast-text-left left-level">
       <h4 class="title is-4 has-text-secondary has-text-weight-light">Contacts</h4>
       <span class="has-text-dark" v-if="sharedState.contactCount" style="margin-left: 1rem; margin-top: 0.3rem">{{ sharedState.contactCount }} total</span>
     </div>
-    <div class="level-right">
+    <div class="level-item">
+      <b-field>
+        <b-input placeholder="Search" v-model="query" type="search" icon="magnify"></b-input>
+        <button class="button is-secondary" @click="search">Search</button>
+        <button class="button is-primary" v-if="inSearch" @click="undo">
+          <b-icon icon="undo"></b-icon>
+        </button>
+      </b-field>
+    </div>
+
+    <div class="level-item right-level">
       <button-icon class="is-primary" @click.native="handleAddContact" icon="account-plus">Add Contact</button-icon>
       <b-tooltip label="Actions for the selected contacts">
         <crud-dropdown :remove="true" @removeClick="handleDeleteClick">
@@ -23,6 +33,7 @@
   import ButtonIcon from './ButtonIcon';
   import CrudDropdown from './CrudDropdown';
   import store from "../store";
+  import { handleContactResponse } from "../utils";
 
   export default {
     name: "top-bar",
@@ -33,6 +44,9 @@
     data() {
       return {
         sharedState: store.state,
+        query: '',
+        inSearch: false,
+        beforeSearchUrl: '',
       }
     },
 
@@ -55,13 +69,35 @@
         axios.all(selectedContacts.map(contact => axios.delete(contact.url)))
           .then(() => {
             this.$emit('contactsDeleted');
-            store.clearContactCheck()
+            store.clearContactCheck();
             this.$toast.open({
               message: 'Contacts removed successfully',
-              type: 'is-success'
+              type: 'is-success',
             })
           })
 
+      },
+
+      search() {
+        store.setLoading(true);
+        if (!this.inSearch) {
+          this.beforeSearchUrl = this.sharedState.currentEndpoint;
+        }
+        axios.get(this.sharedState.initEndpoint, { params: { query: this.query } })
+          .then(handleContactResponse)
+          .then(() => {
+            this.inSearch = true;
+            store.setLoading(false);
+          })
+      },
+
+      undo() {
+        this.query = '';
+        this.inSearch = false;
+        store.setLoading(true);
+        axios.get(this.beforeSearchUrl)
+          .then(handleContactResponse)
+          .then(() => store.setLoading(false))
       },
 
       handleAddContact() {
@@ -80,5 +116,13 @@
 
   .button {
     margin-right: 10px;
+  }
+
+  .left-level {
+    justify-content: left;
+  }
+
+  .right-level {
+    justify-content: right;
   }
 </style>

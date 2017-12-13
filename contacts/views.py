@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.urls import reverse
 from django.views.generic import TemplateView
 from rest_framework import viewsets
@@ -38,5 +39,16 @@ class PersonViewSet(viewsets.ModelViewSet):
     destroy:
     Removes a person from the db
     """
-    queryset = Person.objects.prefetch_related('phonenumber_set', 'email_set', 'address_set').all()
     serializer_class = PersonSerializer
+
+    def get_queryset(self):
+        """Allows to do search queries"""
+        queryset = Person.objects.all()
+        query = self.request.GET.get('query')
+        if query:
+            queryset = queryset.filter(
+                Q(first_name__istartswith=query) | Q(last_name__istartswith=query) | Q(date_of_birth__istartswith=query)
+                | Q(email_set__email__istartswith=query) | Q(phonenumber_set__number__istartswith=query)
+                | Q(address_set__name__istartswith=query)
+            ).distinct()
+        return queryset

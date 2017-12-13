@@ -18,9 +18,6 @@
 
     computed: {
       currentPage() {
-        if (!this.sharedState.previous) {
-          return 1
-        }
 
         if (this.sharedState.next) {
           const offset = parseInt(this.sharedState.next.match(/offset=(.+)/)[1]);

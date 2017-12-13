@@ -16,7 +16,6 @@
 
   import store from './store';
   import ContactsTable from './components/ContactsTable';
-  import Segment from './components/Segment';
   import TopBar from './components/TopBar';
   import ContactModal from './components/ContactModal';
   import PageNumerator from './components/PageNumerator';
@@ -27,7 +26,6 @@
     name: "app",
     components: {
       ContactsTable,
-      Segment,
       TopBar,
       ContactModal,
       PageNumerator
