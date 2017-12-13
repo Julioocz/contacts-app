@@ -1,9 +1,12 @@
 <template>
   <div class="columns is-vcentered">
     <div class="column is-4">
-      <b-field>
-        <b-input :placeholder="placeholder" :value="value" @input="value => $emit('valueChange', value)"
-                 :type="fieldType"></b-input>
+      <b-field :type="error && 'is-danger'" :message="error">
+        <b-input :placeholder="placeholder"
+                 :value="value"
+                 @input="value => $emit('valueChange', value)"
+                 :type="fieldType">
+        </b-input>
       </b-field>
     </div>
     <div class="column is-3 is-offset-2 has-text-primary has-text-centered">
@@ -45,7 +48,7 @@
   export default {
     components: { CustomRadio },
     name: "personal-info-input",
-    props: ['type', 'value', 'infoType', 'primary'],
+    props: ['type', 'value', 'infoType', 'primary', 'error'],
     data() {
       return {}
     },

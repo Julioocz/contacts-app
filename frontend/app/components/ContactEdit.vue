@@ -15,12 +15,20 @@
 
     <div class="columns">
       <div class="column">
-        <b-field label="First Name" class="label-dark">
+        <b-field
+          label="First Name"
+          class="label-dark"
+          :type="temporalContact.first_name_error && 'is-danger'"
+          :message="temporalContact.first_name_error">
           <b-input v-model="temporalContact.first_name"></b-input>
         </b-field>
       </div>
       <div class="column">
-        <b-field label="Last Name" class="label-dark">
+        <b-field
+          label="Last Name"
+          class="label-dark"
+          :type="temporalContact.last_name_error && 'is-danger'"
+          :message="temporalContact.last_name_error">
           <b-input v-model="temporalContact.last_name"></b-input>
         </b-field>
       </div>
@@ -28,7 +36,11 @@
 
     <div class="columns">
       <div class="column is-half">
-        <b-field label="Birth date" class="label-dark">
+        <b-field
+          label="Birth date"
+          class="label-dark"
+          :type="temporalContact.date_of_birth_error && 'is-danger'"
+          :message="temporalContact.date_of_birth_error">
           <b-datepicker
             v-model="temporalContact.date_of_birth"
             placeholder="Click to select..."
@@ -42,17 +54,20 @@
     </div>
 
     <h5 class="title is-5 has-text-secondary">Personal info:</h5>
-    <personal-info-input-section type="email"
-                                 valueProperty="email"
-                                 :info.sync="temporalContact.emails">
+    <personal-info-input-section
+      type="email"
+      valueProperty="email"
+      :info.sync="temporalContact.emails">
     </personal-info-input-section>
-    <personal-info-input-section type="phoneNumber"
-                                 valueProperty="number"
-                                 :info.sync="temporalContact.phone_numbers">
+    <personal-info-input-section
+      type="phoneNumber"
+      valueProperty="number"
+      :info.sync="temporalContact.phone_numbers">
     </personal-info-input-section>
-    <personal-info-input-section type="address"
-                                 valueProperty="name"
-                                 :info.sync="temporalContact.addresses">
+    <personal-info-input-section
+      type="address"
+      valueProperty="name"
+      :info.sync="temporalContact.addresses">
     </personal-info-input-section>
   </div>
 </template>
@@ -91,6 +106,8 @@
       if (editMode && temporalContact.date_of_birth) {
         temporalContact.date_of_birth = new Date(temporalContact.date_of_birth)
       }
+      ;
+
       return {
         sharedState: store.state,
         temporalContact: temporalContact,
@@ -133,7 +150,11 @@
 
       handleSave() {
         store.setLoading(true);
-        const payload = Object.assign({}, this.temporalContact, { date_of_birth: this.dateToIsoSimplified(this.temporalContact.date_of_birth) });
+        const payload = Object.assign({}, this.temporalContact);
+        if (payload.date_of_birth) {
+          payload.date_of_birth = this.dateToIsoSimplified(payload.date_of_birth)
+        }
+
         const method = this.editMode ? 'put' : 'post';
         axios[method](this.saveEndpoint, payload)
           .then(this.handleGoodResponse)
@@ -154,7 +175,25 @@
       },
 
       handleBadResponse(err) {
-        console.log(err);
+        const { data } = err.response;
+        console.log(data);
+        const errors = {
+          first_name_error: data.first_name && data.first_name[0],
+          last_name_error: data.last_name && data.last_name[0],
+          date_of_birth_error: data.date_of_birth && data.date_of_birth[0],
+        };
+        this.temporalContact = Object.assign({}, this.temporalContact, errors);
+        // this.temporalContact.first_name_error = data.first_name && data.first_name[0];
+        // this.temporalContact.last_name_error = data.last_name && data.last_name[0];
+        // this.temporalContact.date_of_birth_error = data.date_of_birth && data.date_of_birth[0];
+        data.emails.forEach((error, index) => this.$set(this.temporalContact.emails[index], 'error', error.email));
+        data.addresses.forEach((error, index) => this.$set(this.temporalContact.addresses[index], 'error', error.name));
+        data.phone_numbers.forEach((error, index) => this.$set(this.temporalContact.phone_numbers[index], 'error', error.number));
+        store.setLoading(false);
+        this.$toast.open({
+          message: 'There was an error processing your form. Please review the marked fields',
+          type: 'is-danger',
+        })
       }
 
     }

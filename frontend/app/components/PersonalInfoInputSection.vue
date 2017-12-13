@@ -18,6 +18,7 @@
       :infoType="item.info_type"
       :primary="item.primary"
       :key="index"
+      :error="item.error"
       @valueChange="value => handleChange(index, value, valueProperty)"
       @infoTypeChange="value => handleChange(index, value, 'info_type')"
       @primaryChange="value => handleChange(index, value, 'primary')"
