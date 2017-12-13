@@ -12,46 +12,11 @@ class Person(TimeStampedModel):
     last_name = models.CharField(max_length=255)
     date_of_birth = models.DateField(null=True, blank=True)
 
+    class Meta:
+        ordering = ('-modified', )
+
     def get_absolute_url(self):
         return reverse('contacts:contact-detail', kwargs={'pk': self.pk})
-
-    def _get_primary(self, name, attr_name=None):
-        """Returns the primary record of the provided related person info object start name.
-
-        primary records are the ones that have the primary bool set to True
-
-        If no there are non records set as primary, the first of the records is returned.
-
-        If there are not records in the info model. None is returned
-
-        If an attr_name is passed, that attribute name is returned. If the attribute does not exist None is returned
-
-        Related objects are: 'email', 'address', 'phone number'
-        Example:
-            self._get_primary('email', 'email')  # Should return the email that has primary == True
-
-        """
-        related_manager = getattr(self, f'{name}_set')
-        try:
-            instance = related_manager.get(primary=True)
-        except ObjectDoesNotExist:
-            instance = related_manager.all().first()
-
-        if attr_name is not None:
-            return getattr(instance, attr_name, None)
-        return instance
-
-    def get_primary_email(self):
-        """Returns the primary email for the person"""
-        return self._get_primary('email', attr_name='email')
-
-    def get_primary_phone_number(self):
-        """Returns the primary phone number for the person"""
-        return self._get_primary('phonenumber', attr_name='number')
-
-    def get_primary_address(self):
-        """Returns the primary address for the person"""
-        return self._get_primary('address', attr_name='name')
 
 
 class BasePersonInfo(models.Model):
@@ -78,6 +43,7 @@ class BasePersonInfo(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ('-primary',)
 
 
 # Info Types
@@ -109,7 +75,7 @@ class Address(BasePersonInfo):
 class PhoneNumber(BasePersonInfo):
     detail_viewname = 'contacts:phone_number-detail'
 
-    PHONE_NUMBER_TYPE = Choices(TYPE_MOVIL, TYPE_HOME, TYPE_WORK, TYPE_OTHER)
+    PHONE_NUMBER_TYPE = Choices(TYPE_MOVIL, TYPE_PERSONAL, TYPE_HOME, TYPE_WORK, TYPE_OTHER)
 
     number = PhoneNumberField()
     info_type = models.CharField(max_length=255, choices=PHONE_NUMBER_TYPE, default=TYPE_MOVIL)

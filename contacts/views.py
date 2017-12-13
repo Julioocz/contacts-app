@@ -1,12 +1,9 @@
 from django.urls import reverse
 from django.views.generic import TemplateView
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets
 
-from .models import Person, Email, Address, PhoneNumber
-from .serializers import (
-    ListPersonSerializer, DetailPersonSerializer, EmailSerializer, AddressSerializer,
-    PhoneNumberSerializer
-)
+from .models import Person
+from .serializers import PersonSerializer
 
 
 class ContactApp(TemplateView):
@@ -41,38 +38,5 @@ class PersonViewSet(viewsets.ModelViewSet):
     destroy:
     Removes a person from the db
     """
-    queryset = Person.objects.all()
-
-    def get_serializer_class(self, *args, **kwargs):
-        """Returns the list serializer when no pk an the method is not POST (this conditions are the ones
-        for the list view)"""
-        if 'pk' not in self.kwargs and not self.request.method == 'POST':
-            return ListPersonSerializer
-
-        return DetailPersonSerializer
-
-
-class BasePersonInfoViewSet(mixins.CreateModelMixin,
-                            mixins.UpdateModelMixin,
-                            mixins.DestroyModelMixin,
-                            viewsets.GenericViewSet):
-    """Base view set for the persons info"""
-    model = None
-
-    def get_queryset(self):
-        return self.model.objects.filter(person_id=self.kwargs['person_pk'])
-
-
-class EmailViewSet(BasePersonInfoViewSet):
-    serializer_class = EmailSerializer
-    model = Email
-
-
-class AddressViewSet(BasePersonInfoViewSet):
-    serializer_class = AddressSerializer
-    model = Address
-
-
-class PhoneNumberViewSet(BasePersonInfoViewSet):
-    serializer_class = PhoneNumberSerializer
-    model = PhoneNumber
+    queryset = Person.objects.prefetch_related('phonenumber_set', 'email_set', 'address_set').all()
+    serializer_class = PersonSerializer
