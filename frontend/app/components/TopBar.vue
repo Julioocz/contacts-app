@@ -4,9 +4,10 @@
       <h4 class="title is-4 has-text-secondary has-text-weight-light">Contacts</h4>
       <span class="has-text-dark" v-if="sharedState.contactCount" style="margin-left: 1rem; margin-top: 0.3rem">{{ sharedState.contactCount }} total</span>
     </div>
+
     <div class="level-item">
       <b-field>
-        <b-input placeholder="Search" v-model="query" type="search" icon="magnify"></b-input>
+        <b-input placeholder="Search" v-model="query" type="search" icon="magnify" @keyup.native.enter="search"></b-input>
         <button class="button is-secondary" @click="search">Search</button>
         <button class="button is-primary" v-if="inSearch" @click="undo">
           <b-icon icon="undo"></b-icon>
@@ -80,6 +81,11 @@
 
       search() {
         store.setLoading(true);
+        if (this.query === '') {
+          this.undo();
+          return;
+        }
+
         if (!this.inSearch) {
           this.beforeSearchUrl = this.sharedState.currentEndpoint;
         }
