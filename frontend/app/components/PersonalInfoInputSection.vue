@@ -58,12 +58,12 @@
         console.log('Handling change', index, value, valueProperty);
         const newInfo = this.info.slice();
         // There can only be a primary value
-        console.log(newInfo);
         if (valueProperty === 'primary') {
           newInfo.forEach(item => item.primary = false);
         }
         console.log(newInfo);
         newInfo[index][valueProperty] = value;
+        newInfo[index].error = '';
         this.$emit('update:info', newInfo);
       },
 
@@ -72,7 +72,7 @@
         const newInfo = this.info.slice();
         const removedItem = newInfo.splice(index, 1);
         // Checking if the removed item was the primary one. If so the first item is set to primary
-        if (removedItem.primary && newInfo.length > 0) {
+        if (removedItem[0].primary && newInfo.length > 0) {
           newInfo[0].primary = true
         }
 

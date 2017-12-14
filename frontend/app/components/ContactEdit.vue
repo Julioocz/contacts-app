@@ -114,6 +114,21 @@
       }
     },
 
+    watch: {
+      'temporalContact.first_name'() {
+        console.log('hello');
+        this.temporalContact.first_name_error = '';
+      },
+
+      'temporalContact.last_name'() {
+        this.temporalContact.last_name_error = '';
+      },
+
+      'temporalContact.date_of_birth'() {
+        this.temporalContact.date_of_birth_error = '';
+      }
+    },
+
     computed: {
       header() {
         return this.editMode ? 'Edit contact' : 'Create contact';
@@ -183,12 +198,18 @@
           date_of_birth_error: data.date_of_birth && data.date_of_birth[0],
         };
         this.temporalContact = Object.assign({}, this.temporalContact, errors);
-        // this.temporalContact.first_name_error = data.first_name && data.first_name[0];
-        // this.temporalContact.last_name_error = data.last_name && data.last_name[0];
-        // this.temporalContact.date_of_birth_error = data.date_of_birth && data.date_of_birth[0];
-        data.emails.forEach((error, index) => this.$set(this.temporalContact.emails[index], 'error', error.email));
-        data.addresses.forEach((error, index) => this.$set(this.temporalContact.addresses[index], 'error', error.name));
-        data.phone_numbers.forEach((error, index) => this.$set(this.temporalContact.phone_numbers[index], 'error', error.number));
+        if (data.emails) {
+          data.emails.forEach((error, index) => this.$set(this.temporalContact.emails[index], 'error', error.email));
+        }
+
+        if (data.addresses) {
+          data.addresses.forEach((error, index) => this.$set(this.temporalContact.addresses[index], 'error', error.name));
+        }
+
+        if (data.phone_numbers) {
+          data.phone_numbers.forEach((error, index) => this.$set(this.temporalContact.phone_numbers[index], 'error', error.number));
+        }
+
         store.setLoading(false);
         this.$toast.open({
           message: 'There was an error processing your form. Please review the marked fields',
