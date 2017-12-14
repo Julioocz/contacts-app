@@ -52,6 +52,12 @@
     },
 
     methods: {
+      /**
+       * Handles the table wide delete action by deleting all the selected contacts on the table.
+       *
+       * If no contact is selected it displays a toast message to remind the user to select a contact
+       * before triggering this action
+       */
       handleDeleteClick() {
         const selectedContacts = Object.entries(this.sharedState.checkedContacts)
           .filter(([key, value]) => value)
@@ -79,6 +85,9 @@
 
       },
 
+      /**
+       * Handles the app search. If no query is set it handles it as an *undo* action
+       */
       search() {
         store.setLoading(true);
         if (this.query === '') {
@@ -97,6 +106,9 @@
           })
       },
 
+      /**
+       * Undo all the searchs or goes back to the non search mode by returning to the initial or beforeSearchUrl
+       */
       undo() {
         this.query = '';
         this.inSearch = false;
@@ -106,6 +118,9 @@
           .then(() => store.setLoading(false))
       },
 
+      /**
+       * Handles the add contact action by opening the edit/create modal in create mode
+       */
       handleAddContact() {
         store.setContactModalMode('create');
         store.setContactModalOpen(true);

@@ -46,6 +46,9 @@
       }
     },
 
+    /**
+     * Sets up the store state api endpoints and gets the initial contacts
+     */
     mounted() {
       store.setInitEndpoint(this.endpoint);
       store.setCurrentEndpoint(this.endpoint);
@@ -53,6 +56,9 @@
     },
 
     methods: {
+      /**
+       * Gets and sets the state of the app contacts
+       */
       getContacts() {
         store.setLoading(true);
         getAndSetContactList()
@@ -60,9 +66,14 @@
           .catch(this.handleError);
       },
 
-      handleError(error) {
-        console.error(error);
-        this.error = true;
+      /**
+       * Handles the error on the get contacts response by displaying a toast
+       */
+      handleError() {
+        this.$toast.open({
+          message: 'An error ocurred retrieving the contacts',
+          type: 'is-danger',m
+        })
       },
     }
   }

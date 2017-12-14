@@ -68,7 +68,6 @@
       },
 
       handleDelete(index) {
-        console.log('DELETE');
         const newInfo = this.info.slice();
         const removedItem = newInfo.splice(index, 1);
         // Checking if the removed item was the primary one. If so the first item is set to primary
