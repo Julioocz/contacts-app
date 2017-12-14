@@ -15,7 +15,7 @@ import os
 import environ
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-ROOT_DIR = environ.Path(__file__) - 2
+ROOT_DIR = environ.Path(__file__) - 3
 APPS_DIR = ROOT_DIR
 
 env = environ.Env()
@@ -27,9 +27,9 @@ env = environ.Env()
 SECRET_KEY = 'rlfwmzoo1sffxw-1@e&ox_8jj0l0^kxm&a169bq=@z6+*392z^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DJANGO_DEBUG', default=True)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOST', default=[])
 
 # Application definition
 
@@ -130,6 +130,7 @@ STATICFILES_DIRS = (
     str(ROOT_DIR.path('frontend')),
 )
 STATIC_URL = '/static/'
+STATIC_ROOT = str(ROOT_DIR('staticfiles'))
 
 # Custom stuff
 WEBPACK_LOADER = {
