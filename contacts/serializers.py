@@ -36,6 +36,11 @@ def _update_related(person, model_class, info_list):
     """Modifies the related field to the person object. If the record doesn't exist
     a new one is created
     """
+    # Removing removed related objects
+    info_ids = [info['id'] for info in info_list if 'id' in info]
+    model_class.objects.filter(person=person).exclude(id__in=info_ids).delete()
+
+    # Adding new info and updating existent
     for item in info_list:
         try:
             record = model_class.objects.filter(person=person).get(id=item.pop('id', None))

@@ -28,7 +28,7 @@ class AddressFactory(factory.django.DjangoModelFactory):
 
 
 class PhoneNumberFactory(factory.django.DjangoModelFactory):
-    number = '+584243334444'
+    number = factory.LazyFunction(lambda: f"+58424{''.join(str(random.randrange(10)) for _ in range(7))}")
     info_type = factory.LazyFunction(lambda: random_choice(models.PhoneNumber.PHONE_NUMBER_TYPE))
 
     class Meta:
